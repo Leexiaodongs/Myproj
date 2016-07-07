@@ -7,12 +7,16 @@ import javax.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.lizhendong.web.dao.DB;
 
 @Controller
 public class loginAction {
-	 @RequestMapping("/login/loginfrom.do")
+	
+	 
+	 @RequestMapping(value="/login/loginfrom.do")
+	 @ResponseBody //返回字符串
       public String loginform(HttpServletRequest request,HttpServletResponse response,Model model,HttpSession session){
     	  String name=(String) request.getParameter("name");
   		  String password=(String) request.getParameter("password");
@@ -31,7 +35,7 @@ public class loginAction {
     	  
     	  
       }
-	 @RequestMapping("/login/login.do")
+	 @RequestMapping(value="/login/login.do")
 	 public String login(HttpServletRequest request,HttpServletResponse response,Model model){
 		 
 		 
