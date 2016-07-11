@@ -19,8 +19,12 @@
     http://www.springframework.org/schema/aop  
     http://www.springframework.org/schema/aop/spring-aop.xsd  
     http://www.springframework.org/schema/util  
-    http://www.springframework.org/schema/util/spring-util.xsd">  
-  
+    http://www.springframework.org/schema/util/spring-util.xsd
+    http://java.sun.com/xml/ns/j2ee 
+    http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd "     
+    >  
+    <!-- 启用spring mvc 注解-->  
+    <mvc:annotation-driven/>   
     <!-- 自动扫描web包 ,将带有注解的类 纳入spring容器管理 -->  
     <context:component-scan base-package="com.lizhendong.web.*"></context:component-scan>  
     
@@ -108,15 +112,102 @@
            </list>
        </property>
 	</bean>
-	</context:annotation-config>
-	<mvc:interceptors>  
-        <mvc:interceptor>  
-            <mvc:mapping path="/login/*"/>  
-             <!-- 
-                <mvc:mapping path="/goods/*"/>  
-              <mvc:mapping path="/contact/*"/>   -->
-            <bean class="com.lizhendong.base.filter.login.UserInterceptor"></bean>  
-        </mvc:interceptor>  
-    </mvc:interceptors>  
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<bean
+					class="org.springframework.http.converter.ByteArrayHttpMessageConverter" />
+				<bean
+					class="org.springframework.http.converter.StringHttpMessageConverter">
+					<property name="supportedMediaTypes">
+						<list>
+							<value>text/html; charset=utf-8</value>
+						</list>
+					</property>
+				</bean>
+				<bean
+					class="org.springframework.http.converter.ResourceHttpMessageConverter" />
+				<bean
+					class="org.springframework.http.converter.xml.SourceHttpMessageConverter" />
+				<bean
+					class="org.springframework.http.converter.xml.XmlAwareFormHttpMessageConverter" />
+				<bean
+					class="org.springframework.http.converter.xml.Jaxb2RootElementHttpMessageConverter" />
+			</list>
+		</property>
+	</bean>
+	 <import resource="sessionmessager.xml" />
+	
+    </context:annotation-config>
+    <!--解决数据从后台返回前台的乱码问题  -->
+	
+
+	<!-- <bean id="multipartResolver"  
+    class="org.springframework.web.multipart.commons.CommonsMultipartResolver"  
+    p:defaultEncoding="UTF-8" /> -->
+     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:jdbc.properties" />
+  </bean>
+  <!-- 配置数据源，从上面配置文件读取-->
+  <!-- 数据源 -->
+  <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+    <property name="driverClassName" value="${jdbc.driverClassName}" />
+    <property name="url" value="${jdbc.url}" />
+    <property name="username" value="${jdbc.username}" />
+    <property name="password" value="${jdbc.password}" />
+    <property name="initialSize" value="${jdbc.initialSize}" />
+    <property name="maxActive" value="${jdbc.maxActive}" />
+    <property name="maxIdle" value="${jdbc.maxIdle}" />
+    <property name="defaultAutoCommit" value="${jdbc.defaultAutoCommit}" />
+    <property name="removeAbandoned" value="true" />
+    <property name="removeAbandonedTimeout" value="${jdbc.removeAbandonedTimeout}" />
+    <property name="logAbandoned" value="${jdbc.logAbandoned}" />
+    <!--主动检测连接池是否有效-->
+    <property name="testWhileIdle"  value="${jdbc.testWhileIdle}" />
+    <property name="validationQuery" value="${jdbc.validationQuery}" />
+    <property name="timeBetweenEvictionRunsMillis"  value="${jdbc.timeBetweenEvictionRunsMillis}" />
+    <property name="numTestsPerEvictionRun" value="${jdbc.numTestsPerEvictionRun}" />
+  </bean>
+  <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <property name="dataSource" ref="dataSource"/>
+    <!-- 配置扫描Domain的包路径 -->
+    <property name="typeAliasesPackage" value="com.lizhendong.web.entity"/>
+    <!-- 配置mybatis配置文件的位置 -->
+    <property name="configLocation" value="classpath:mybatis/mybatis-config.xml"/>
+    <!-- 配置扫描Mapper XML的位置 -->
+    <property name="mapperLocations" value="classpath*:com/lizhendong/web/entity/mapper/*.xml"/>
+  </bean>
+  <!-- 配置扫描Mapper接口的包路径 -->
+  <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+    <property name="basePackage" value="com.lizhendong.web.dao"/>
+  </bean>
+  <bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+    <constructor-arg ref="sqlSessionFactory"/>
+  </bean>
+  <bean id="mybatisTransactionManager"
+ class="org.springframework.jdbc.datasource.DataSourceTransactionManager"
+      p:dataSource-ref="dataSource"/>
+  <tx:advice id="txAdvice" transaction-manager="mybatisTransactionManager">
+    <tx:attributes>
+      <tx:method name="save*" propagation="REQUIRED"/>
+      <tx:method name="insert*" propagation="REQUIRED"/>
+      <tx:method name="add*" propagation="REQUIRED"/>
+      <tx:method name="update*" propagation="REQUIRED"/>
+      <tx:method name="delete*" propagation="REQUIRED"/>
+      <tx:method name="remove*" propagation="REQUIRED"/>
+      <tx:method name="accept*" propagation="REQUIRED"/>
+      <tx:method name="reject*" propagation="REQUIRED"/>
+      <tx:method name="execute*" propagation="REQUIRED"/>
+      <tx:method name="del*" propagation="REQUIRED"/>
+      <tx:method name="recover*" propagation="REQUIRED"/>
+      <tx:method name="sync*" propagation="REQUIRED"/>
+      <tx:method name="*" read-only="true"/>
+    </tx:attributes>
+  </tx:advice>
+ <!--  <aop:config>
+    <aop:pointcut id="txPointcut"
+            expression="execution(public * com.lizhendong.web.service.*.*(..))"/>
+    <aop:advisor pointcut-ref="txPointcut" advice-ref="txAdvice"/>
+  </aop:config> -->
 </beans> 
 
