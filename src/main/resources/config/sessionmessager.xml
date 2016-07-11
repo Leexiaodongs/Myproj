@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mvc:interceptors>  
+	<mvc:interceptor>  
+           <mvc:mapping path="/login/*"/> 
+             <!-- 
+                <mvc:mapping path="/goods/*"/>  
+              <mvc:mapping path="/contact/*"/>   -->
+            <bean class="com.lizhendong.base.filter.login.UserInterceptor"></bean>  
+    </mvc:interceptor>  
+</mvc:interceptors>  
+ 
