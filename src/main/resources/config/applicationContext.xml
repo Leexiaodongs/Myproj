@@ -204,10 +204,10 @@
       <tx:method name="*" read-only="true"/>
     </tx:attributes>
   </tx:advice>
- <!--  <aop:config>
+  <aop:config>
     <aop:pointcut id="txPointcut"
             expression="execution(public * com.lizhendong.web.service.*.*(..))"/>
     <aop:advisor pointcut-ref="txPointcut" advice-ref="txAdvice"/>
-  </aop:config> -->
+  </aop:config>
 </beans> 
 
