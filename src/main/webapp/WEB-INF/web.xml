@@ -10,6 +10,10 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   <!-- Spring MVC配置 -->
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>classpath:config/applicationContext.xml</param-value>
+</context-param>
 <!-- 设置session失效，单位分 --> 
 <session-config> 
       <session-timeout>1</session-timeout> 
@@ -62,10 +66,7 @@
   </listener>  -->
 
 <!-- 指定Spring Bean的配置文件所在目录。默认配置在WEB-INF目录下 -->
-<context-param>
-    <param-name>contextConfigLocation</param-name>
-    <param-value>classpath:config/applicationContext.xml</param-value>
-</context-param>
+
   
   
   
